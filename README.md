@@ -4,6 +4,29 @@
 ## 📌 Latar Belakang & Objektif Bisnis
 Dalam industri perbankan, mengidentifikasi calon nasabah yang berisiko gagal bayar (*default*) sangat krusial untuk meminimalisir status *Non-Performing Loan* (NPL). Proyek ini membangun sistem prediksi risiko kredit komparatif berbasis *machine learning* yang mengklasifikasikan nasabah ke dalam kategori **Lancar (0)** atau **Macet (1)** berdasarkan profil historis, data finansial, dan tujuan pinjaman mereka.
 
+## 📈 Analisis Eksploratif Data (EDA)
+Sebelum membangun model prediktif, analisis awal dilakukan untuk memahami karakteristik dan distribusi data nasabah berdasarkan tujuan peminjaman (*loan intent*).
+
+### 1. Distribusi Tujuan Pinjaman Nasabah
+Grafik di bawah ini menunjukkan sebaran volume pemohon berdasarkan alasan atau tujuan pengajuan pinjaman:
+
+![Distribusi Tujuan Pinjaman](Distribusi_Tujuan_Pinjaman_Nasabah.png)
+
+*   **Insight Volume:** Kategori **EDUCATION** (Pendidikan) dan **MEDICAL** (Medis) mendominasi jumlah pengajuan pinjaman terbanyak dari total keseluruhan nasabah, diikuti oleh kategori *Venture* dan *Debt Consolidation*.
+
+### 2. Status Pinjaman Berdasarkan Tujuan (Lancar vs Gagal Bayar)
+Untuk melihat korelasi awal terhadap risiko kredit, setiap kategori tujuan pinjaman dipecah berdasarkan status kelancaran pembayaran (0 = Lancar, 1 = Gagal Bayar):
+
+![Status Pinjaman Berdasarkan Tujuan](Status_Pinjaman_Berdasarkan_Tujuan.png)
+
+*   **Insight Risiko Bisnis:** Terlihat jelas bahwa kategori **MEDICAL** dan **DEBTCONSOLIDATION** memiliki proporsi batang biru (Gagal Bayar/1) yang relatif lebih tinggi dibandingkan volumenya, mengindikasikan bahwa pinjaman untuk keperluan medis dan konsolidasi utang memiliki tingkat kerentanan gagal bayar yang lebih besar. Sebaliknya, kategori **VENTURE** menunjukkan rasio risiko yang relatif lebih aman.
+
+### 💡 Mengapa Memilih Machine Learning ketimbang Metode Tradisional?
+Meskipun model tradisional (seperti Logistic Regression) lebih sederhana, mereka sering kali gagal menangkap pola data keuangan yang kompleks. Proyek ini menerapkan **Machine Learning (khususnya *Gradient Boosting*)** karena keunggulan mutlaknya:
+*   **Pola Non-Linear:** Mampu memetakan interaksi tersembunyi antar-variabel yang terlalu kaku jika dihitung dengan rumus statistik biasa.
+*   **Minimalisir Risiko (*Recall* Tinggi):** Jauh lebih efektif mendeteksi nasabah macet secara akurat dan mencegah kerugian finansial bank.
+*   **Objektivitas Data:** Algoritma secara mandiri menyusun aturan keputusan terbaik berdasarkan bobot data riil melalui *Feature Importance*.
+
 ## 🗄️ Dataset & Preprocessing
 *   **Sumber:** Credit Risk Dataset
 *   **Dimensi Data Awal:** 32.572 baris dan 12 kolom fitur.
