@@ -33,7 +33,7 @@ Berikut adalah tabel rekapitulasi performa keenam model yang diuji pada data uji
 | **Logistic Regression** | 80.37 | 71.68 | 17.04 | 27.54 | 74.69 |
 
 ### 📈 Grafik Perbandingan Multi-Model
-![Perbandingan Benchmark](Matrix_Evaluation_Model.png)
+![Perbandingan Benchmark](Perbandingan_Evaluasi_Performa_Multi-Model_ML_Credit_Risk.png)
 
 ## 🔍 Analisis Mendalam & Wawasan Bisnis (*Business Insights*)
 
@@ -42,7 +42,7 @@ Berikut adalah tabel rekapitulasi performa keenam model yang diuji pada data uji
 *   **Kelemahan Model Linear:** Model tradisional seperti Logistic Regression dan Naive Bayes mengalami *underperforming* parah pada metrik *Recall*, di mana sebagian besar nasabah macet gagal terdeteksi (*False Negatives* tinggi).
 
 ### 🏆 Faktor Penentu Kredit Macet (*Feature Importance*)
-![Feature Importance CatBoost](Importance_Factor.png)
+![Feature Importance CatBoost](Feature-Importance_Catboost.png)
 
 Berdasarkan analisis model terbaik, tiga pemicu utama kredit macet adalah:
 1.  **Rasio Pinjaman terhadap Pendapatan (`loan_percent_income`):** Indikator bahaya paling mutlak. Beban cicilan yang memakan porsi terlalu besar dari gaji bulanan meningkatkan risiko gagal bayar secara drastis.
