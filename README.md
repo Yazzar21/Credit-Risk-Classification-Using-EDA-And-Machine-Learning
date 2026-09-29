@@ -139,8 +139,9 @@ Berdasarkan analisis model terbaik, tiga pemicu utama kredit macet adalah:
 2.  **Total Pendapatan (`person_income`):** Menunjukkan kapasitas finansial absolut nasabah.
 3.  **Status Tempat Tinggal (`person_home_ownership_RENT`):** Profil nasabah dengan status sewa/kontrak menunjukkan pola risiko finansial yang khas.
 
-## 💻 Tech Stack
-*   **Bahasa Pemrograman:** Python 3
-*   **Pustaka Analitik:** Pandas, NumPy
-*   **Pustaka Machine Learning:** Scikit-Learn, XGBoost, LightGBM, CatBoost
-*   **Pustaka Visualisasi:** Matplotlib, Seaborn
+## 💻 **Tech Stack**
+* **Bahasa Pemrograman & Kueri:** Python 3, SQL
+* **Basis Data & Tools:** SQLite, DB Browser for SQLite
+* **Pustaka Analitik:** Pandas, NumPy
+* **Pustaka Machine Learning:** Scikit-Learn, XGBoost, LightGBM, CatBoost
+* **Pustaka Visualisasi:** Matplotlib, Seaborn
