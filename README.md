@@ -21,6 +21,46 @@ Untuk melihat korelasi awal terhadap risiko kredit, setiap kategori tujuan pinja
 
 *   **Insight Risiko Bisnis:** Terlihat jelas bahwa kategori **MEDICAL** dan **DEBTCONSOLIDATION** memiliki proporsi batang biru (Gagal Bayar/1) yang relatif lebih tinggi dibandingkan volumenya, mengindikasikan bahwa pinjaman untuk keperluan medis dan konsolidasi utang memiliki tingkat kerentanan gagal bayar yang lebih besar. Sebaliknya, kategori **VENTURE** menunjukkan rasio risiko yang relatif lebih aman.
 
+## 🗄️ Exploratory Data Analysis & Risk Profiling via SQL
+
+Sebelum tahap pemodelan prediktif dengan Python, analisis awal dan validasi integritas data dilakukan langsung dari database relasional menggunakan SQLite (`credit_risk_database.db`).
+
+### Kueri SQL Utama:
+1. **Analisis Rasio Portofolio Gagal Bayar (Loan Default Rate):**
+   ```sql
+   SELECT 
+       loan_status,
+       COUNT(*) AS total_nasabah,
+       ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM credit_risk_bersih), 2) AS persentase
+   FROM credit_risk_bersih
+   GROUP BY loan_status;
+2. **Pemetaan Risiko Berdasarkan Tujuan Pinjaman (loan_intent):**
+   ```sql
+   SELECT 
+    loan_intent AS tujuan_pinjaman,
+    COUNT(*) AS total_nasabah,
+    SUM(loan_status) AS total_gagal_bayar,
+    ROUND(AVG(loan_status) * 100.0, 2) AS default_rate_persen,
+    ROUND(AVG(loan_amnt), 2) AS rata_rata_nominal_pinjaman
+   FROM credit_risk_bersih
+   GROUP BY loan_intent
+   ORDER BY default_rate_persen DESC;
+3. **Validasi Prinsip Risk-Based Pricing (loan_grade):**
+   ```sql
+   SELECT 
+    loan_grade AS peringkat_kredit,
+    COUNT(*) AS total_nasabah,
+    SUM(loan_status) AS total_gagal_bayar,
+    ROUND(AVG(loan_status) * 100.0, 2) AS default_rate_persen,
+    ROUND(AVG(loan_int_rate), 2) AS rata_rata_suku_bunga
+   FROM credit_risk_bersih
+   GROUP BY loan_grade
+   ORDER BY loan_grade ASC;
+Berdasarkan hasil Temuan Bisnis yang Didapatkan (Business Insight):
+*  Baseline Default Rate: Portofolio memiliki tingkat gagal bayar sebesar 21,82% (7.107 nasabah) berbanding 78,18% kredit lancar (25.465 nasabah), mengindikasikan tingkat risiko moderat tanpa ketimpangan kelas yang terlalu ekstrem.
+*  Segmen Pinjaman Paling Rentan: Pinjaman dengan tujuan konsolidasi utang (DEBTCONSOLIDATION: 28,59%) dan kebutuhan medis (MEDICAL: 26,71%) mencatatkan rasio gagal bayar tertinggi.
+*  Korelasi Peringkat Kredit & Bunga: Terbukti adanya penerapan Risk-Based Pricing secara konsisten, di mana suku bunga meningkat seiring penurunan peringkat kredit (Grade A: 7,67% $\rightarrow$ Grade G: 19,53%). Lonjakan risiko signifikan terjadi pada Grade D ke bawah dengan default rate melompat melampaui 59%, dan mencapai puncaknya pada Grade G (98,44%).
+
 ### 💡 Mengapa Memilih Machine Learning ketimbang Metode Tradisional?
 Meskipun model tradisional (seperti Logistic Regression) lebih sederhana, mereka sering kali gagal menangkap pola data keuangan yang kompleks. Proyek ini menerapkan **Machine Learning (khususnya *Gradient Boosting*)** karena keunggulan mutlaknya:
 *   **Pola Non-Linear:** Mampu memetakan interaksi tersembunyi antar-variabel yang terlalu kaku jika dihitung dengan rumus statistik biasa.
