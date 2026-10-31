@@ -1,32 +1,32 @@
-# 🏦 Prediksi Risiko Kredit (Credit Risk Classification)
-**End-to-End Data Pipeline & Multi-Model Machine Learning Benchmarking menggunakan Python**
+# 🏦 **CREDIT RISK CLASSIFICATION**
+**End-to-End Data Pipeline & Multi-Model Machine Learning Benchmarking using Python**
 
-## 📌 Latar Belakang & Objektif Bisnis
-Dalam industri perbankan, mengidentifikasi calon nasabah yang berisiko gagal bayar (*default*) sangat krusial untuk meminimalisir status *Non-Performing Loan* (NPL). Proyek ini membangun sistem prediksi risiko kredit komparatif berbasis *machine learning* yang mengklasifikasikan nasabah ke dalam kategori **Lancar (0)** atau **Macet (1)** berdasarkan profil historis, data finansial, dan tujuan pinjaman mereka.
+## 📌 **Background & Business Objectives**
+In the banking industry, identifying prospective customers who are at risk of default (*default*). It's crucial to minimize status *Non-Performing Loan* (NPL). This project develops a comparative credit risk prediction system based on machine learning, which classifies customers into categories of **Current (0)** or **Default (1)** based on their historical profiles, financial data and loan purposes.
 
-## 📈 Analisis Eksploratif Data (EDA)
-Sebelum membangun model prediktif, analisis awal dilakukan untuk memahami karakteristik dan distribusi data nasabah berdasarkan tujuan peminjaman (*loan intent*).
+## 📈 **Exploratory Data Analysis (EDA)**
+Before building a predictive model, an initial analysis is conducted to understand the characteristics and distribution of customer data based on the purpose of the loan (*loan intent*).
 
-### 1. Distribusi Tujuan Pinjaman Nasabah
-Grafik di bawah ini menunjukkan sebaran volume pemohon berdasarkan alasan atau tujuan pengajuan pinjaman:
+### **1. Distribution of Customer Loan Purposes**
+The chart below shows the distribution of applicant volume based on the reason or purpose for the loan application:
 
 ![Distribusi Tujuan Pinjaman](Distribusi_Tujuan_Pinjaman_Nasabah.png)
 
-*   **Insight Volume:** Kategori **EDUCATION** (Pendidikan) dan **MEDICAL** (Medis) mendominasi jumlah pengajuan pinjaman terbanyak dari total keseluruhan nasabah, diikuti oleh kategori *Venture* dan *Debt Consolidation*.
+*   **Volume Insights:** The **EDUCATION** and **MEDICAL** categories account for the highest number of loan applications from the total client base, followed by the *Venture* and *Debt Consolidation* categories.
 
-### 2. Status Pinjaman Berdasarkan Tujuan (Lancar vs Gagal Bayar)
-Untuk melihat korelasi awal terhadap risiko kredit, setiap kategori tujuan pinjaman dipecah berdasarkan status kelancaran pembayaran (0 = Lancar, 1 = Gagal Bayar):
+### **2. Loan Status by Purpose (Current vs. Default)**
+To examine the initial correlation with credit risk, each loan purpose category is broken down based on payment status (0 = Current, 1 = Default):
 
 ![Status Pinjaman Berdasarkan Tujuan](Status_Pinjaman_Berdasarkan_Tujuan.png)
 
-*   **Insight Risiko Bisnis:** Terlihat jelas bahwa kategori **MEDICAL** dan **DEBTCONSOLIDATION** memiliki proporsi batang biru (Gagal Bayar/1) yang relatif lebih tinggi dibandingkan volumenya, mengindikasikan bahwa pinjaman untuk keperluan medis dan konsolidasi utang memiliki tingkat kerentanan gagal bayar yang lebih besar. Sebaliknya, kategori **VENTURE** menunjukkan rasio risiko yang relatif lebih aman.
+*   **Business Risk Insights:** It is evident that the **MEDICAL** and **DEBTCONSOLIDATION** categories have a relatively higher proportion of blue bars (Default/1) in relation to their total volume, indicating that loans for medical purposes and debt consolidation carry a greater risk of default. Conversely, the **VENTURE** category shows a relatively safer risk profile.
 
-## 🗄️ Exploratory Data Analysis & Risk Profiling via SQL
+## 🗄️ **Exploratory Data Analysis & Risk Profiling via SQL**
 
-Sebelum tahap pemodelan prediktif dengan Python, analisis awal dan validasi integritas data dilakukan langsung dari database relasional menggunakan SQLite (`credit_risk_database.db`).
+Prior to the predictive modeling phase in Python, initial analysis and data integrity validation are performed directly from the relational database using SQLite (`credit_risk_database.db`).
 
-### Kueri SQL Utama:
-1. **Analisis Rasio Portofolio Gagal Bayar (Loan Default Rate):**
+### **Main SQL Query:**
+1. **Loan Default Rate Portfolio Analysis:**
    ```sql
    SELECT 
        loan_status,
@@ -34,7 +34,8 @@ Sebelum tahap pemodelan prediktif dengan Python, analisis awal dan validasi inte
        ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM credit_risk_bersih), 2) AS persentase
    FROM credit_risk_bersih
    GROUP BY loan_status;
-2. **Pemetaan Risiko Berdasarkan Tujuan Pinjaman (loan_intent):**
+   ```
+2. **Risk Mapping Based on Loan Purpose (loan_intent):**
    ```sql
    SELECT 
     loan_intent AS tujuan_pinjaman,
@@ -45,7 +46,8 @@ Sebelum tahap pemodelan prediktif dengan Python, analisis awal dan validasi inte
    FROM credit_risk_bersih
    GROUP BY loan_intent
    ORDER BY default_rate_persen DESC;
-3. **Validasi Prinsip Risk-Based Pricing (loan_grade):**
+   ```
+3. **Validation of the Risk-Based Pricing Principle (loan_grade):**
    ```sql
    SELECT 
     loan_grade AS peringkat_kredit,
@@ -56,13 +58,14 @@ Sebelum tahap pemodelan prediktif dengan Python, analisis awal dan validasi inte
    FROM credit_risk_bersih
    GROUP BY loan_grade
    ORDER BY loan_grade ASC;
+   ```
    
-Berdasarkan hasil Temuan Bisnis yang Didapatkan (Business Insight):
+Based on the Business Insights Obtained:
 
-### 1. Profil Risiko Berdasarkan Tujuan Pinjaman (`loan_intent`)
-Kueri SQL dijalankan untuk memetakan kategori pinjaman dengan rasio kredit macet (*default rate*) tertinggi:
+### **1. Risk Profile Based on Loan Purpose (`loan_intent`)**
+An SQL query is executed to map loan categories with the highest default rates:
 
-| Tujuan Pinjaman | Total Nasabah | Total Gagal Bayar | Default Rate (%) | Rata-rata Pinjaman ($) |
+| **Loan Purpose** | **Total Customers** | **Total Failure to Pay** | **Default Rate (%)** | **Average Loan ($)** |
 | :--- | :---: | :---: | :---: | :---: |
 | **DEBTCONSOLIDATION** | 5.212 | 1.490 | **28,59%** | $9.594,89 |
 | **MEDICAL** | 6.070 | 1.621 | **26,71%** | $9.260,04 |
@@ -71,10 +74,10 @@ Kueri SQL dijalankan untuk memetakan kategori pinjaman dengan rasio kredit macet
 | **EDUCATION** | 6.451 | 1.111 | **17,22%** | $9.481,53 |
 | **VENTURE** | 5.716 | 847 | **14,82%** | $9.580,97 |
 
-### 2. Validasi Prinsip *Risk-Based Pricing* (`loan_grade`)
-Kueri SQL dijalankan untuk melihat hubungan antara peringkat kualitas kredit, suku bunga, dan potensi gagal bayar:
+### **2. Validation of the *Risk-Based Pricing* Principle (`loan_grade`)**
+An SQL query is executed to examine the relationship between credit quality ratings, interest rates and the potential for default:
 
-| Peringkat (*Grade*) | Total Nasabah | Total Gagal Bayar | Default Rate (%) | Suku Bunga Rata-rata (%) |
+| **Grade** | **Total Customers** | **Total Failure to Pay** | **Default Rate (%)** | **Average Interest Rate (%)** |
 | :---: | :---: | :---: | :---: | :---: |
 | **A** | 10.775 | 1.073 | **9,96%** | 7,67% |
 | **B** | 10.448 | 1.701 | **16,28%** | 10,99% |
@@ -84,36 +87,35 @@ Kueri SQL dijalankan untuk melihat hubungan antara peringkat kualitas kredit, su
 | **F** | 241 | 170 | **70,54%** | 17,76% |
 | **G** | 64 | 63 | **98,44%** | 19,53% |
 
-### 💡 Temuan Bisnis Utama (*Main Business Insight*):
-* **Tujuan Pinjaman Paling Berisiko:** Kategori `DEBTCONSOLIDATION` (28,59%) dan `MEDICAL` (26,71%) memiliki tingkat gagal bayar tertinggi, menandakan debitur pada kategori ini berada dalam tekanan finansial yang rentan.
-* **Titik Kritis Kelayakan Kredit (*The Tipping Point*):** Terjadi lonjakan drastis tingkat kredit macet dari Grade C (20,74%) ke Grade D (59,03%). Lebih dari separuh nasabah pada Grade D ke bawah terbukti gagal bayar, membenarkan mengapa bank menetapkan suku bunga jauh lebih tinggi pada segmen ini.
+### 💡 **Main Business Insight:**
+* Highest-Risk Loan Purposes: Category `DEBTCONSOLIDATION` (28,59%) and `MEDICAL` (26,71%) has the highest default rate, indicating that debtors in this category are under precarious financial pressure.
+* The Tipping Point: There has been a drastic surge in the non-performing loan rate for Grade C (20,74%) to Grade D (59,03%). More than half of customers in Grade D and below are found to be in default, justifying why banks charge much higher interest rates in this segment.
 
-### 💡 Mengapa Memilih Machine Learning ketimbang Metode Tradisional?
-Meskipun model tradisional (seperti Logistic Regression) lebih sederhana, mereka sering kali gagal menangkap pola data keuangan yang kompleks. Proyek ini menerapkan **Machine Learning (khususnya *Gradient Boosting*)** karena keunggulan mutlaknya:
-*   **Pola Non-Linear:** Mampu memetakan interaksi tersembunyi antar-variabel yang terlalu kaku jika dihitung dengan rumus statistik biasa.
-*   **Minimalisir Risiko (*Recall* Tinggi):** Jauh lebih efektif mendeteksi nasabah macet secara akurat dan mencegah kerugian finansial bank.
-*   **Objektivitas Data:** Algoritma secara mandiri menyusun aturan keputusan terbaik berdasarkan bobot data riil melalui *Feature Importance*.
+### 💡 **Why Choose Machine Learning Over Traditional Methods?**
+Although traditional models (such as Logistic Regression) are simpler, they often fail to capture complex patterns in financial data. This project employs **Machine Learning (specifically Gradient Boosting)** due to its clear superiority:
+*   Non-Linear Patterns: Capable of mapping hidden interactions between variables that are too rigid to be captured by standard statistical formulas.
+*   Minimize Risk: Far more effective at accurately detecting delinquent customers and preventing financial losses for the bank.
+*   Data Objectivity: The algorithm independently formulates the optimal decision rules based on the weighting of real-world data via Feature Importance.
 
-## 🗄️ Dataset & Preprocessing
-*   **Sumber:** Credit Risk Dataset
-*   **Dimensi Data Awal:** 32.572 baris dan 12 kolom fitur.
-*   **Dimensi Setelah Encoding:** 32.572 baris dan 23 kolom (setelah diterapkan *One-Hot Encoding*).
-*   **Data Splitting:** Rasio 80% Data Latih (26.057 baris) dan 20% Data Uji (6.515 baris).
+## 🗄️ **Dataset & Preprocessing**
+*   Source: Credit Risk Dataset
+*   Initial Data Dimensions: 32,572 rows and 12 feature columns.
+*   Dimensions After Encoding: 32,572 rows and 23 columns (after applying One-Hot Encoding).
+*   Data Splitting: An 80% training data (26,057 rows) and 20% test data (6,515 rows) split.
 
-## 🛠️ Metodologi & Model Benchmarking
-Proyek ini menguji dan membandingkan **6 algoritma *machine learning* berbeda** secara paralel untuk menemukan solusi prediktif paling optimal bagi institusi keuangan:
-1. Logistic Regression
-2. Naive Bayes
-3. Random Forest
+## 🛠️ **Benchmarking Methodology & Models**
+This project tests and compares **6 different machine learning algorithms** in parallel to identify the most optimal predictive solution for financial institutions:
+1. Logistic Regression (LR)
+2. Naive Bayes(NB)
+3. Random Forest (RF)
 4. XGBoost
 5. LightGBM
 6. CatBoost
 
-## 📊 Hasil Perbandingan Performa Model (*Benchmarking Result*)
+## 📊 **Model Performance Comparison Results**
+The following is a summary table of the performance of the six models tested on the test data (6,515 rows):
 
-Berikut adalah tabel rekapitulasi performa keenam model yang diuji pada data uji (6.515 baris):
-
-| Model | Akurasi (%) | Presisi (%) | Recall (%) | F1-Score (%) | ROC-AUC (%) |
+| Model | Accuracy (%) | Precision (%) | Recall (%) | F1-Score (%) | ROC-AUC (%) |
 | :--- | :---: | :---: | :---: | :---: | :---: |
 | **CatBoost** | **93.81** | **96.63** | 74.33 | **84.03** | 94.85 |
 | **XGBoost** | 93.63 | 94.85 | **74.96** | 83.74 | **95.21** |
@@ -122,26 +124,26 @@ Berikut adalah tabel rekapitulasi performa keenam model yang diuji pada data uji
 | **Naive Bayes** | 81.61 | 70.88 | 27.14 | 39.25 | 77.68 |
 | **Logistic Regression** | 80.37 | 71.68 | 17.04 | 27.54 | 74.69 |
 
-### 📈 Grafik Perbandingan Multi-Model
+### 📈 **Multi-Model Comparison Chart**
 ![Perbandingan Benchmark](Perbandingan_Evaluasi_Performa_Multi-Model_ML_Credit_Risk.png)
 
-## 🔍 Analisis Mendalam & Wawasan Bisnis (*Business Insights*)
+## 🔍 **In-depth Analysis & Business Insights**
+Below's the breakdown and explanation:
+*   **The Dominance of Gradient Boosting Algorithms:** Boosting-based models (**CatBoost, XGBoost, and LightGBM**) have proven to be significantly superior to traditional models. This is because their architecture is capable of mapping complex, non-linear interactions within financial data..
+*   **Best Production Model Machine Learning:** **CatBoost** was identified as the best-performing model, achieving an **F1-Score of 84.03%**, offering an optimal balance between detecting delinquent customers and minimizing the rate of incorrect classifications (*False Positives*).
+*   **Limitations of the Linear Model:** Traditional models such as Logistic Regression and Naive Bayes perform poorly in terms of the *Recall* metric, as the majority of delinquent customers go undetected (resulting in a high number of *False Negatives*).
 
-*   **Dominasi Algoritma Gradient Boosting:** Model berbasis *boosting* (**CatBoost, XGBoost, dan LightGBM**) terbukti jauh unggul dibanding model tradisional. Hal ini karena arsitekturnya mampu memetakan interaksi non-linear yang kompleks di dalam data finansial.
-*   **Model Produksi Terbaik:** **CatBoost** dinobatkan sebagai model terbaik dengan perolehan **F1-Score 84.03%**, memberikan keseimbangan optimal dalam mendeteksi nasabah macet sekaligus menekan angka kesalahan tuduhan (*False Positives*).
-*   **Kelemahan Model Linear:** Model tradisional seperti Logistic Regression dan Naive Bayes mengalami *underperforming* parah pada metrik *Recall*, di mana sebagian besar nasabah macet gagal terdeteksi (*False Negatives* tinggi).
-
-### 🏆 Faktor Penentu Kredit Macet (*Feature Importance*)
+### 🏆 **Determinants of Non-Performing Loans**
 ![Feature Importance CatBoost](Feature-Importance_Catboost.png)
 
-Berdasarkan analisis model terbaik, tiga pemicu utama kredit macet adalah:
-1.  **Rasio Pinjaman terhadap Pendapatan (`loan_percent_income`):** Indikator bahaya paling mutlak. Beban cicilan yang memakan porsi terlalu besar dari gaji bulanan meningkatkan risiko gagal bayar secara drastis.
-2.  **Total Pendapatan (`person_income`):** Menunjukkan kapasitas finansial absolut nasabah.
-3.  **Status Tempat Tinggal (`person_home_ownership_RENT`):** Profil nasabah dengan status sewa/kontrak menunjukkan pola risiko finansial yang khas.
+Based on the best model analysis, the three primary triggers for non-performing loans are:
+1.  **Loan to Income Ratio:** The most definitive warning sign, debt repayments that consume an excessively large portion of one’s monthly salary drastically increase the risk of default.
+2.  **Person Income:** Indicates the client's absolute financial capacity.
+3.  **Person Home Ownership RENT:** Customer profiles with a rental/contractual status exhibit a distinct pattern of financial risk.
 
 ## 💻 **Tech Stack**
-* **Bahasa Pemrograman & Kueri:** Python 3, SQL
-* **Basis Data & Tools:** SQLite, DB Browser for SQLite
-* **Pustaka Analitik:** Pandas, NumPy
-* **Pustaka Machine Learning:** Scikit-Learn, XGBoost, LightGBM, CatBoost
-* **Pustaka Visualisasi:** Matplotlib, Seaborn
+* **Programming & Query Languages:** Python 3, SQL
+* **Databases & Tools:** SQLite and DB Browser for SQLite
+* **Analytical Library:** Pandas and NumPy
+* **Machine Learning Libraries:** Scikit-Learn, XGBoost, LightGBM, CatBoost
+* **Visualization Libraries:** Matplotlib and Seaborn
